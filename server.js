@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bcrypt = require('bcryptjs');
 
@@ -9,8 +10,8 @@ const jwt = require('jsonwebtoken'); // Adiciona a biblioteca jsonwebtoken
 
 const SECRET_KEY = process.env.SECRET_KEY || 'algumaChaveSuperSecretaAquiParaJWT'; // Substitua por uma chave secreta segura
 
-// Inicializa o Firebase Admin SDK
-const serviceAccount = require('./backend/firebase-service-account.json');
+// Inicializa o Firebase Admin SDK usando a variável de ambiente FIREBASE_CONFIG
+const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: 'https://ncpi-102ca-default-rtdb.firebaseio.com', // Substitua pelo URL correto do seu Firebase Realtime Database
