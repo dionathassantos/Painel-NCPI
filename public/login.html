@@ -125,7 +125,8 @@
             fetch("https://painel-ncpi.onrender.com/api/login", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password }),
+                mode: 'cors' // Certifique-se de que o servidor suporta CORS
             })
                 .then(response => response.json())
                 .then(data => {
