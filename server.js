@@ -24,7 +24,8 @@ const app = express();
 const PORT = 3000;
 
 // Middleware
-const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:5550']; // Add all allowed origins here
+const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:5550', 
+    'https://painel-ncpi-io.onrender.com']; // Add all allowed origins here
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
