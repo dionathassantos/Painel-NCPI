@@ -38,6 +38,9 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Responder a requisições OPTIONS (preflight)
+app.options('*', cors());
+
 app.use(bodyParser.json());
 
 // Serve arquivos estáticos da pasta 'public'
@@ -120,6 +123,17 @@ app.get('/api/verify-token', (req, res) => {
         console.error('Erro ao verificar token:', error);
         res.status(401).json({ message: 'Token inválido ou expirado.' });
     }
+});
+
+// Exemplo de uso do fetch para login
+const email = 'example@example.com';
+const password = 'examplePassword';
+
+fetch("https://painel-ncpi.onrender.com/api/login", {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+    mode: 'cors'
 });
 
 // Inicia o servidor
