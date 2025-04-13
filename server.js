@@ -153,7 +153,7 @@ app.get('/api/protected', authenticateToken, (req, res) => {
 const email = 'example@example.com';
 const password = 'examplePassword';
 
-fetch("https://painel-ncpi.onrender.com/api/login", {
+fetch("https://painel-ncpi-io.onrender.com/api/login", {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
