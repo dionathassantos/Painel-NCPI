@@ -24,8 +24,12 @@ const app = express();
 const PORT = 3000;
 
 // Middleware
-const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:5550', 
-    'https://painel-ncpi-io.onrender.com']; // Add all allowed origins here
+const allowedOrigins = [
+    'http://127.0.0.1:5500',
+    'http://localhost:5550',
+    'https://painel-ncpi-io.onrender.com'
+];
+
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
@@ -34,8 +38,9 @@ app.use(cors({
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    credentials: true, // Permitir envio de cookies, se necessário
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'] // Cabeçalhos permitidos
 }));
 
 // Responder a requisições OPTIONS (preflight)
