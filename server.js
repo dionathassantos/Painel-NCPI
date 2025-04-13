@@ -1,5 +1,6 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const admin = require('firebase-admin');
@@ -49,7 +50,7 @@ app.get('/index.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Rota de Registro
+// Rota de Registro 
 app.post('/api/register', async (req, res) => {
     const { fullName, email, password } = req.body;
 
