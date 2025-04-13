@@ -10,11 +10,12 @@ const jwt = require('jsonwebtoken'); // Adiciona a biblioteca jsonwebtoken
 
 const SECRET_KEY = process.env.SECRET_KEY || 'algumaChaveSuperSecretaAquiParaJWT'; // Substitua por uma chave secreta segura
 
-// Inicializa o Firebase Admin SDK usando a variável de ambiente FIREBASE_CONFIG
+// Parse JSON from the FIREBASE_CONFIG environment variable
 const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: 'https://ncpi-102ca-default-rtdb.firebaseio.com', // Substitua pelo URL correto do seu Firebase Realtime Database
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://ncpi-102ca-default-rtdb.firebaseio.com'
 });
 
 const db = admin.database();
