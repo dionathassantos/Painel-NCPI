@@ -61,6 +61,20 @@ app.get('/index.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Middleware para autenticar o token
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+    if (!token) return res.status(401).json({ message: 'Token não fornecido.' });
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Token inválido ou expirado.' });
+        req.user = user;
+        next();
+    });
+}
+
 // Rota de Registro 
 app.post('/api/register', async (req, res) => {
     const { fullName, email, password } = req.body;
@@ -128,6 +142,11 @@ app.get('/api/verify-token', (req, res) => {
         console.error('Erro ao verificar token:', error);
         res.status(401).json({ message: 'Token inválido ou expirado.' });
     }
+});
+
+// Rota protegida de exemplo
+app.get('/api/protected', authenticateToken, (req, res) => {
+    res.json({ message: 'Acesso autorizado.', user: req.user });
 });
 
 // Exemplo de uso do fetch para login
