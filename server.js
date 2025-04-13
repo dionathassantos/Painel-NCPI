@@ -1,12 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const bcrypt = require('bcryptjs');
-
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const admin = require('firebase-admin');
 const path = require('path');
 const jwt = require('jsonwebtoken'); // Adiciona a biblioteca jsonwebtoken
+
+const app = express(); // Inicializa o Express
 
 const SECRET_KEY = process.env.SECRET_KEY || 'algumaChaveSuperSecretaAquiParaJWT'; // Substitua por uma chave secreta segura
 
@@ -15,13 +16,12 @@ const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'firebase-adminsdk-fbsvc@ncpi-102ca.iam.gserviceaccount.com'
+  databaseURL: 'https://ncpi-102ca-default-rtdb.firebaseio.com'
 });
 
 const db = admin.database();
-const app = express();
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 const allowedOrigins = [
@@ -147,17 +147,6 @@ app.get('/api/verify-token', (req, res) => {
 // Rota protegida de exemplo
 app.get('/api/protected', authenticateToken, (req, res) => {
     res.json({ message: 'Acesso autorizado.', user: req.user });
-});
-
-// Exemplo de uso do fetch para login
-const email = 'example@example.com';
-const password = 'examplePassword';
-
-fetch("https://painel-ncpi-io.onrender.com/api/login", {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-    mode: 'cors'
 });
 
 // Inicia o servidor
