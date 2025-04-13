@@ -15,7 +15,7 @@ const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://ncpi-102ca-default-rtdb.firebaseio.com'
+  databaseURL: 'firebase-adminsdk-fbsvc@ncpi-102ca.iam.gserviceaccount.com'
 });
 
 const db = admin.database();
