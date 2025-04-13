@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Painel Estratégico NCPI</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar (same as in index.html) -->
+        <div class="sidebar">
+            <!-- Sidebar content (same as in index.html) -->
+            <!-- ... -->
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header (same as in index.html) -->
+            <header class="header">
+                <!-- ... -->
+            </header>
+
+            <!-- Settings Content -->
+            <div class="settings-container">
+                <h1 class="settings-title">Configurações</h1>
+
+                <div id="successMessage" class="success-message hidden">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM8 15L3 10L4.41 8.59L8 12.17L15.59 4.58L17 6L8 15Z" fill="#4CAF50"/>
+                    </svg>
+                    <span>Perfil atualizado com sucesso!</span>
+                </div>
+
+                <div class="settings-card">
+                    <h2 class="settings-section-title">Informações do Perfil</h2>
+
+                    <form id="profileForm">
+                        <div class="settings-form-grid">
+                            <div class="form-group">
+                                <label for="fullName">Nome Completo</label>
+                                <input type="text" id="fullName" name="fullName" value="Ana Silva">
+                                <div class="error-message" id="fullNameError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">E-mail</label>
+                                <input type="email" id="email" name="email" value="ana.silva@ncpi.org">
+                                <div class="error-message" id="emailError"></div>
+                            </div>
+                        </div>
+
+                        <h3 class="settings-subsection-title">Alterar Senha</h3>
+
+                        <div class="settings-form-password">
+                            <div class="form-group">
+                                <label for="currentPassword">Senha Atual</label>
+                                <div class="password-input">
+                                    <input type="password" id="currentPassword" name="currentPassword">
+                                    <button type="button" class="toggle-password">
+                                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M1.66666 10C1.66666 10 4.99999 3.33334 10 3.33334C15 3.33334 18.3333 10 18.3333 10C18.3333 10 15 16.6667 10 16.6667C4.99999 16.6667 1.66666 10 1.66666 10Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="error-message" id="currentPasswordError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="newPassword">Nova Senha</label>
+                                <div class="password-input">
+                                    <input type="password" id="newPassword" name="newPassword">
+                                    <button type="button" class="toggle-password">
+                                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M1.66666 10C1.66666 10 4.99999 3.33334 10 3.33334C15 3.33334 18.3333 10 18.3333 10C18.3333 10 15 16.6667 10 16.6667C4.99999 16.6667 1.66666 10 1.66666 10Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="error-message" id="newPasswordError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirmar Nova Senha</label>
+                                <div class="password-input">
+                                    <input type="password" id="confirmPassword" name="confirmPassword">
+                                    <button type="button" class="toggle-password">
+                                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M1.66666 10C1.66666 10 4.99999 3.33334 10 3.33334C15 3.33334 18.3333 10 18.3333 10C18.3333 10 15 16.6667 10 16.6667C4.99999 16.6667 1.66666 10 1.66666 10Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="error-message" id="confirmPasswordError"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="save-button">
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                    <path d="M14 15.6667H4.33333C3.97971 15.6667 3.64057 15.5262 3.39052 15.2762C3.14048 15.0261 3 14.687 3 14.3333V3.66667C3 3.31305 3.14048 2.97391 3.39052 2.72386C3.64057 2.47381 3.97971 2.33333 4.33333 2.33333H11.6667L15 5.66667V14.3333C15 14.687 14.8595 15.0261 14.6095 15.2762C14.3594 15.5262 14.0203 15.6667 13.6667 15.6667H14Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12.3333 15.6667V10.3333H5.66667V15.6667" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M5.66667 2.33333V5.66667H11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Salvar Alterações
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="settings-card">
+                    <h2 class="settings-section-title">Excluir Conta</h2>
+                    <p class="settings-description">Ao excluir sua conta, todos os seus dados serão permanentemente removidos. Esta ação não pode ser desfeita.</p>
+                    <button type="button" id="deleteAccountButton" class="delete-account-button">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M2.33333 4.66667H15.6667" stroke="#FF3B30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M7.33333 8V12.3333" stroke="#FF3B30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10.6667 8V12.3333" stroke="#FF3B30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 4.66667L3.66667 14.3333C3.66667 14.687 3.80714 15.0261 4.05719 15.2761C4.30724 15.5262 4.64638 15.6667 5 15.6667H13C13.3536 15.6667 13.6928 15.5262 13.9428 15.2761C14.1929 15.0261 14.3333 14.687 14.3333 14.3333L15 4.66667" stroke="#FF3B30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6.33333 4.66667V2.33333C6.33333 2.15652 6.40357 1.98695 6.5286 1.86193C6.65362 1.7369 6.82319 1.66667 7 1.66667H11C11.1768 1.66667 11.3464 1.7369 11.4714 1.86193C11.5964 1.98695 11.6667 2.15652 11.6667 2.33333V4.66667" stroke="#FF3B30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Excluir Minha Conta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Confirmation Modal -->
+    <div class="modal" id="deleteAccountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmar Exclusão</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita e todos os seus dados serão permanentemente removidos.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-button">Cancelar</button>
+                <button type="button" class="delete-button">Excluir Conta</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+</html>

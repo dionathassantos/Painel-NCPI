@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Estratégico NCPI</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Configuration
+        const API_URL = 'http://localhost:3000';
+        const APP_URL = 'http://localhost:5550/public'; // Corrigido para o endereço correto do Vite Server
+
+        let pageInitialized = false;
+        let isVerifying = false;
+
+        async function verifyToken() {
+            if (isVerifying) return; // Prevent multiple simultaneous verifications
+            isVerifying = true;
+
+            try {
+                const token = localStorage.getItem('authToken');
+                console.log('Iniciando verificação do token:', token);
+
+                if (!token) {
+                    throw new Error('Token não encontrado');
+                }
+
+                const response = await fetch(`${API_URL}/api/verify-token`, {
+                    method: 'GET',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('Status da resposta:', response.status);
+
+                if (response.status === 401) {
+                    throw new Error('Token inválido ou expirado');
+                }
+
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Token válido:', data);
+                pageInitialized = true;
+                isVerifying = false;
+
+                // Redireciona para a página inicial apenas se estiver na tela de login
+                if (window.location.pathname.includes('login.html')) {
+                    window.location.replace(`${APP_URL}/index.html`);
+                }
+
+                return true;
+
+            } catch (error) {
+                console.error('Erro na verificação:', error.message);
+
+                // Redireciona para a tela de login apenas se o token for inválido ou expirado
+                if (!window.location.pathname.includes('login.html') && 
+                    (error.message.includes('Token') || error.message.includes('401'))) {
+                    localStorage.removeItem('authToken');
+                    window.location.replace(`${APP_URL}/login.html`);
+                }
+                isVerifying = false;
+                return false;
+            }
+        }
+
+        // Apenas verifica o token após o evento DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            verifyToken().then(valid => {
+                if (valid) {
+                    console.log('Token validado com sucesso. Página liberada.');
+                } else {
+                    console.warn('Token inválido, redirecionando para login.');
+                }
+            }).catch(error => {
+                console.error('Erro crítico:', error);
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <img src="images\Logo-cor NCPI.svg" alt="NCPI Logo" class="logo">
+            </div>
+            <nav>
+                <ul>
+                    <li class="menu-item active">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M10 1L12.5 6.5H19L14 10.5L15.5 17L10 13.5L4.5 17L6 10.5L1 6.5H7.5L10 1Z" fill="#04695E"/>
+                                </svg>
+                            </span>
+                            <span class="menu-text">Painel</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z" stroke="#696969" stroke-width="1.5"/>
+                                </svg>
+                            </span>
+                            <span class="menu-text">Metas</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M13.5 2.5H2.5V13.5H13.5V2.5Z" stroke="#04695E" stroke-width="1.5"/>
+                                </svg>
+                            </span>
+                            <span class="menu-text">Resultados</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5Z" stroke="#04695E" stroke-width="1.5"/>
+                                    <path d="M8 4.5V8.5H12" stroke="#04695E" stroke-width="1.5"/>
+                                </svg>
+                            </span>
+                            <span class="menu-text">Cronograma</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="settings.html" class="menu-link">
+                            <span class="menu-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M10 13C11.6569 13 13 11.6569 13 10C13 8.34315 11.6569 7 10 7C8.34315 7 7 8.34315 7 10C7 11.6569 8.34315 13 10 13Z" stroke="#04695E" stroke-width="1.5"/>
+                                    <path d="M16.0545 12.4545C15.9456 12.7013 15.9131 12.9751 15.9613 13.2405C16.0094 13.5059 16.1359 13.7508 16.3245 13.9436L16.3736 13.9927C16.5258 14.1447 16.6465 14.3252 16.7288 14.5238C16.8112 14.7225 16.8536 14.9354 16.8536 15.1505C16.8536 15.3655 16.8112 15.5784 16.7288 15.7771C16.6465 15.9757 16.5258 16.1562 16.3736 16.3082C16.2217 16.4603 16.0412 16.581 15.8425 16.6634C15.6439 16.7457 15.431 16.7881 15.2159 16.7881C15.0009 16.7881 14.7879 16.7457 14.5893 16.6634C14.3906 16.581 14.2102 16.4603 14.0582 16.3082L14.0091 16.2591C13.8163 16.0705 13.5714 15.9439 13.306 15.8958C13.0406 15.8477 12.7668 15.8802 12.52 15.9891C12.2782 16.0928 12.0716 16.265 11.9263 16.4845C11.7809 16.704 11.7029 16.9613 11.7018 17.2245V17.3636C11.7018 17.7976 11.5294 18.2138 11.2225 18.5207C10.9157 18.8276 10.4994 19 10.0655 19C9.63146 19 9.21525 18.8276 8.90837 18.5207C8.60149 18.2138 8.42909 17.7976 8.42909 17.3636V17.29C8.42276 17.0192 8.3351 16.7565 8.17751 16.5362C8.01992 16.3159 7.79969 16.1481 7.54545 16.0545C7.29868 15.9456 7.02493 15.9131 6.75952 15.9613C6.4941 16.0094 6.24919 16.1359 6.05636 16.3245L6.00727 16.3736C5.85526 16.5258 5.67476 16.6465 5.47611 16.7288C5.27746 16.8112 5.06452 16.8536 4.84945 16.8536C4.63439 16.8536 4.42145 16.8112 4.2228 16.7288C4.02415 16.6465 3.84365 16.5258 3.69164 16.3736C3.53946 16.2217 3.41879 16.0412 3.33644 15.8425C3.2541 15.6439 3.21172 15.431 3.21172 15.2159C3.21172 15.0009 3.2541 14.7879 3.33644 14.5893C3.41879 14.3906 3.53946 14.2102 3.69164 14.0582L3.74073 14.0091C3.92933 13.8163 4.05588 13.5714 4.104 13.306C4.15212 13.0406 4.11962 12.7668 4.01073 12.52C3.90704 12.2782 3.73482 12.0716 3.51531 11.9263C3.29579 11.7809 3.03843 11.7029 2.77545 11.7018H2.63636C2.20237 11.7018 1.78616 11.5294 1.47928 11.2225C1.1724 10.9157 1 10.4994 1 10.0655C1 9.63146 1.1724 9.21525 1.47928 8.90837C1.78616 8.60149 2.20237 8.42909 2.63636 8.42909H2.71C2.98081 8.42276 3.24346 8.3351 3.46379 8.17751C3.68412 8.01992 3.85195 7.79969 3.94545 7.54545C4.05435 7.29868 4.08684 7.02493 4.03873 6.75952C3.99061 6.4941 3.86406 6.24919 3.67545 6.05636L3.62636 6.00727C3.47419 5.85526 3.35351 5.67476 3.27117 5.47611C3.18883 5.27746 3.14645 5.06452 3.14645 4.84945C3.14645 4.63439 3.18883 4.42145 3.27117 4.2228C3.35351 4.02415 3.47419 3.84365 3.62636 3.69164C3.77837 3.53946 3.95887 3.41879 4.15752 3.33644C4.35617 3.2541 4.56911 3.21172 4.78418 3.21172C4.99925 3.21172 5.21219 3.2541 5.41084 3.33644C5.60949 3.41879 5.78998 3.53946 5.942 3.69164L5.99109 3.74073C6.18392 3.92933 6.42883 4.05588 6.69425 4.104C6.95967 4.15212 7.23342 4.11962 7.48018 4.01073H7.54545C7.78729 3.90704 7.99387 3.73482 8.13923 3.51531C8.28459 3.29579 8.36259 3.03843 8.36364 2.77545V2.63636C8.36364 2.20237 8.53604 1.78616 8.84292 1.47928C9.1498 1.1724 9.56601 1 10 1C10.434 1 10.8502 1.1724 11.1571 1.47928C11.464 1.78616 11.6364 2.20237 11.6364 2.63636V2.71C11.6374 2.97298 11.7154 3.23034 11.8608 3.44986C12.0061 3.66937 12.2127 3.84159 12.4545 3.94545C12.7013 4.05435 12.9751 4.08684 13.2405 4.03873C13.5059 3.99061 13.7508 3.86406 13.9436 3.67545L13.9927 3.62636C14.1447 3.47419 14.3252 3.35351 14.5238 3.27117C14.7225 3.18883 14.9354 3.14645 15.1505 3.14645C15.3655 3.14645 15.5784 3.18883 15.7771 3.27117C15.9757 3.35351 16.1562 3.47419 16.3082 3.62636C16.4604 3.77837 16.581 3.95887 16.6634 4.15752C16.7457 4.35617 16.7881 4.56911 16.7881 4.78418C16.7881 4.99925 16.7457 5.21219 16.6634 5.41084C16.581 5.60949 16.4604 5.78998 16.3082 5.942L16.2591 5.99109C16.0705 6.18392 15.9439 6.42883 15.8958 6.69425C15.8477 6.95967 15.8802 7.23342 15.9891 7.48018V7.54545C16.0928 7.78729 16.265 7.99387 16.4845 8.13923C16.704 8.28459 16.9613 8.36259 17.2245 8.36364H17.3636C17.7976 8.36364 18.2138 8.53604 18.5207 8.84292C18.8276 9.1498 19 9.56601 19 10C19 10.434 18.8276 10.8502 18.5207 11.1571C18.2138 11.464 17.7976 11.6364 17.3636 11.6364H17.29C17.027 11.6374 16.7697 11.7154 16.5501 11.8608C16.3306 12.0061 16.1584 12.2127 16.0545 12.4545Z" stroke="#04695E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="menu-text">Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">AS</div>
+                <div class="user-info">
+                    <div class="user-name">Ana Silva</div>
+                    <div class="user-email">ana.silva@ncpi.org</div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="header-title">Painel Estratégico NCPI</h1>
+                <div class="header-actions">
+                    <button class="notification-button" id="notificationButton">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M16 7C16 5.4087 15.3679 3.88258 14.2426 2.75736C13.1174 1.63214 11.5913 1 10 1C8.4087 1 6.88258 1.63214 5.75736 2.75736C4.63214 3.88258 4 5.4087 4 7C4 14 1 16 1 16H19C19 16 16 14 16 7Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M11.73 19C11.5542 19.3031 11.3019 19.5547 10.9982 19.7295C10.6946 19.9044 10.3504 19.9965 10 19.9965C9.64964 19.9965 9.30541 19.9044 9.00179 19.7295C8.69818 19.5547 8.44583 19.3031 8.27 19" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="notification-badge">2</span>
+                    </button>
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h3>Notificações</h3>
+                        </div>
+                        <div class="notification-list">
+                            <div class="notification-item">
+                                <div class="notification-avatar">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M13.3333 14V12.6667C13.3333 11.9594 13.0524 11.2811 12.5523 10.781C12.0522 10.281 11.3739 10 10.6667 10H5.33333C4.62609 10 3.94781 10.281 3.44772 10.781C2.94762 11.2811 2.66666 11.9594 2.66666 12.6667V14" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M8.00001 7.33333C9.47277 7.33333 10.6667 6.13943 10.6667 4.66667C10.6667 3.19391 9.47277 2 8.00001 2C6.52725 2 5.33334 3.19391 5.33334 4.66667C5.33334 6.13943 6.52725 7.33333 8.00001 7.33333Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="notification-content">
+                                    <p class="notification-name">Carlos Mendes</p>
+                                    <p class="notification-email">carlos.mendes@example.com</p>
+                                    <p class="notification-date">Solicitação de acesso: 15/06/2023</p>
+                                    <div class="notification-actions">
+                                        <button class="approve-button">Aprovar</button>
+                                        <button class="reject-button">Rejeitar</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notification-item">
+                                <div class="notification-avatar">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M13.3333 14V12.6667C13.3333 11.9594 13.0524 11.2811 12.5523 10.781C12.0522 10.281 11.3739 10 10.6667 10H5.33333C4.62609 10 3.94781 10.281 3.44772 10.781C2.94762 11.2811 2.66666 11.9594 2.66666 12.6667V14" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M8.00001 7.33333C9.47277 7.33333 10.6667 6.13943 10.6667 4.66667C10.6667 3.19391 9.47277 2 8.00001 2C6.52725 2 5.33334 3.19391 5.33334 4.66667C5.33334 6.13943 6.52725 7.33333 8.00001 7.33333Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="notification-content">
+                                    <p class="notification-name">Mariana Oliveira</p>
+                                    <p class="notification-email">mariana.oliveira@example.com</p>
+                                    <p class="notification-date">Solicitação de acesso: 14/06/2023</p>
+                                    <div class="notification-actions">
+                                        <button class="approve-button">Aprovar</button>
+                                        <button class="reject-button">Rejeitar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="logout-button" id="logoutButton">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M7 19H3C2.46957 19 1.96086 18.7893 1.58579 18.4142C1.21071 18.0391 1 17.5304 1 17V3C1 2.46957 1.21071 1.96086 1.58579 1.58579C1.96086 1.21071 2.46957 1 3 1H7" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M14 15L19 10L14 5" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19 10H7" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Sair</span>
+                    </button>
+                </div>
+            </header>
+            <!-- Dashboard Content -->
+            <div class="dashboard-container">
+                <!-- Header -->
+                <div class="dashboard-header">
+                    <h1>Painel Estratégico</h1>
+                    <div class="title-divider"></div>
+                    <h2>PORTA PARA FORA | 2025 - 2027</h2>
+                    <div class="porta-selector">
+                        <button class="porta-button active" data-porta="fora">Porta para Fora</button>
+                        <button class="porta-button" data-porta="dentro">Porta para Dentro</button>
+                    </div>
+                </div>
+                <!-- Metrics Section -->
+                <div class="metrics-section">
+                    <!-- Overview Metrics -->
+                    <div class="overview-metrics">
+                        <h3>Visão Geral</h3>
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M2 10H18M2 10L5 7M2 10L5 13" stroke="#A6CE39" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <span class="metric-label">Iniciativas</span>
+                            <span class="metric-value">4</span>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M10 1L12.5 6.5H19L14 10.5L15.5 17L10 13.5L4.5 17L6 10.5L1 6.5H7.5L10 1Z" fill="#A6CE39"/>
+                                </svg>
+                            </div>
+                            <span class="metric-label">Resultados</span>
+                            <span class="metric-value">8</span>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon dark">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M10 1L12.5 6.5H19L14 10.5L15.5 17L10 13.5L4.5 17L6 10.5L1 6.5H7.5L10 1Z" fill="#A6CE39"/>
+                                </svg>
+                            </div>
+                            <span class="metric-label dark">Metas</span>
+                            <span class="metric-value dark">42</span>
+                        </div>
+                    </div>
+                    <!-- Status Metrics -->
+                    <div class="status-metrics">
+                        <h3>Status das Metas</h3>
+                        <div class="status-grid">
+                            <div class="status-item">
+                                <div class="status-indicator satisfatorio">
+                                    <div class="status-inner"></div>
+                                </div>
+                                <div class="status-info">
+                                    <span class="status-count">2</span>
+                                    <span class="status-label">SATISFATÓRIO</span>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator alerta">
+                                    <div class="status-inner"></div>
+                                </div>
+                                <div class="status-info">
+                                    <span class="status-count">1</span>
+                                    <span class="status-label">ALERTA</span>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator critico">
+                                    <div class="status-inner"></div>
+                                </div>
+                                <div class="status-info">
+                                    <span class="status-count">2</span>
+                                    <span class="status-label">CRÍTICO</span>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator concluido">
+                                    <div class="status-inner"></div>
+                                </div>
+                                <div class="status-info">
+                                    <span class="status-count">5</span>
+                                    <span class="status-label">CONCLUÍDOS</span>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator nao-monitorado">
+                                    <div class="status-inner"></div>
+                                </div>
+                                <div class="status-info">
+                                    <span class="status-count">32</span>
+                                    <span class="status-label">NÃO MONITORADOS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Initiatives Section -->
+                <div class="initiatives-section">
+                    <div class="initiatives-header">
+                        <h2>Iniciativas</h2>
+                        <button class="new-initiative-button" id="newInitiativeButton">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 3.33334V12.6667" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3.33334 8H12.6667" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Nova Iniciativa
+                        </button>
+                    </div>
+                    <div class="initiatives-list">
+                        <!-- Initiative Card 1 (Collapsed) -->
+                        <div class="initiative-card" data-id="1">
+                            <div class="initiative-header">
+                                <div class="initiative-toggle">
+                                    <svg class="toggle-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                        <path d="M6.75 13.5L11.25 9L6.75 4.5" stroke="#04695E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="initiative-info">
+                                    <h3 class="initiative-title">1. NCPI Dissemina</h3>
+                                    <p class="initiative-description">O NCPI Dissemina é a iniciativa voltada a ampliar a capacidade do NCPI disseminar evidências e conhecimentos científicos plurais com potencial de impacto sobre o desenho e a implementação de políticas públicas voltadas às Primeiras Infâncias.</p>
+                                    <div class="initiative-count">11 METAS</div>
+                                </div>
+                                <div class="initiative-metrics">
+                                    <div class="initiative-status-indicators">
+                                        <div class="mini-indicator satisfatorio">2</div>
+                                        <div class="mini-indicator alerta">3</div>
+                                        <div class="mini-indicator critico">4</div>
+                                        <div class="mini-indicator concluido">1</div>
+                                        <div class="mini-indicator nao-monitorado">1</div>
+                                    </div>
+                                </div>
+                                <div class="initiative-responsible">Ana Silva</div>
+                            </div>
+                        </div>
+                        <!-- Initiative Card 2 (Expanded) -->
+                        <div class="initiative-card expanded" data-id="2">
+                            <div class="initiative-header">
+                                <div class="initiative-toggle">
+                                    <svg class="toggle-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                        <path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="#04695E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="initiative-info">
+                                    <h3 class="initiative-title">1. NCPI Dissemina</h3>
+                                    <div class="initiative-count">11 METAS</div>
+                                </div>
+                                <div class="initiative-metrics">
+                                    <div class="initiative-status-indicators">
+                                        <div class="mini-indicator satisfatorio">2</div>
+                                        <div class="mini-indicator alerta">3</div>
+                                        <div class="mini-indicator critico">4</div>
+                                        <div class="mini-indicator concluido">1</div>
+                                        <div class="mini-indicator nao-monitorado">1</div>
+                                    </div>
+                                </div>
+                                <div class="initiative-responsible">Ana Silva</div>
+                            </div>
+                            <div class="initiative-content">
+                                <p class="initiative-description">Canais e produtos voltados a levar evidências científicas para formuladores de políticas e agentes de implementação que atuam para aterrissar as políticas públicas e para desenvolver serviços públicos para as crianças na primeira infância.</p>
+                                <div class="initiative-actions">
+                                    <button class="action-button primary">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M8 3.33334V12.6667" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M3.33334 8H12.6667" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        Novo Resultado
+                                    </button>
+                                    <button class="action-button secondary">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M8 3.33334V12.6667" stroke="#505050" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M3.33334 8H12.6667" stroke="#505050" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        Nova Meta
+                                    </button>
+                                </div>
+                                <div class="resultados-section">
+                                    <h4>Resultados</h4>
+                                    <div class="resultado-accordion expanded">
+                                        <div class="resultado-header">
+                                            <div class="resultado-toggle">
+                                                <svg class="toggle-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                    <path d="M4 6L8 10L12 6" stroke="#04695E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </div>
+                                            <h5 class="resultado-title">1.1. NCPI visto como top referência sobre evidências para desenho e implementação de PPPI</h5>
+                                        </div>
+                                        <div class="resultado-content">
+                                            <div class="metas-table-container">
+                                                <table class="metas-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Status</th>
+                                                            <th>Meta</th>
+                                                            <th>Responsável</th>
+                                                            <th>Alcance</th>
+                                                            <th>Editar</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="meta-row" data-id="1.1.1">
+                                                            <td>
+                                                                <div class="status-indicator-cell">
+                                                                    <div class="status-indicator satisfatorio">
+                                                                        <div class="status-inner"></div>
+                                                                    </div>
+                                                                    <div class="status-date">Abr 2025</div>
+                                                                </div>
+                                                            </td>
+                                                            <td>Manter o site do NCPI entre os 3 primeiros colocados no Google em buscas de expressões prioritárias</td>
+                                                            <td>Ana Silva</td>
+                                                            <td>
+                                                                <div class="progress-circle" data-progress="78">
+                                                                    <svg width="48" height="48" viewBox="0 0 48 48">
+                                                                        <circle cx="24" cy="24" r="18" fill="transparent" stroke="#E5E5E5" stroke-width="4"/>
+                                                                        <circle class="progress" cx="24" cy="24" r="18" fill="transparent" stroke="#909090" stroke-width="4" stroke-dasharray="113.1" stroke-dashoffset="24.88" transform="rotate(-90 24 24)"/>
+                                                                    </svg>
+                                                                    <span class="progress-text">78%</span>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <button class="edit-button">
+                                                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                                                        <path d="M10 3L15 8L4 19H2V17L13 6L10 3Z" stroke="#909090" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                    </svg>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <!-- More meta rows would go here -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- New Initiative Modal -->
+    <div class="modal" id="newInitiativeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nova Iniciativa</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="newInitiativeForm">
+                    <div class="form-group">
+                        <label for="title">Título <span class="required">*</span></label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Descrição <span class="required">*</span></label>
+                        <textarea id="description" name="description" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="responsible">Responsável <span class="required">*</span></label>
+                        <input type="text" id="responsible" name="responsible" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="porta">Porta</label>
+                        <select id="porta" name="porta">
+                            <option value="fora">Porta para Fora</option>
+                            <option value="dentro">Porta para Dentro</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-button">Cancelar</button>
+                <button type="button" class="submit-button">Criar Iniciativa</button>
+            </div>
+        </div>
+    </div>
+    <!-- Meta Modal -->
+    <div class="modal" id="metaModal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <div class="meta-status-indicator"></div>
+                <h2 id="metaTitle">Manter o site do NCPI entre os 3 primeiros colocados no Google</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-button active" data-tab="overview">Visão Geral</button>
+                <button class="tab-button" data-tab="history">Histórico de Status</button>
+                <button class="tab-button" data-tab="actions">Encaminhamentos</button>
+            </div>
+            <div class="modal-body">
+                <div class="tab-content active" id="overviewTab">
+                    <!-- Content for overview tab -->
+                </div>
+                <div class="tab-content" id="historyTab">
+                    <!-- Content for history tab -->
+                </div>
+                <div class="tab-content" id="actionsTab">
+                    <!-- Content for actions tab -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-button">Fechar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.removeItem('authToken'); // Remove o token
+            window.location.href = 'login.html'; // Redireciona para a tela de login
+        });
+    </script>
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/modals.js"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Painel Estratégico NCPI</title>
+    <link rel="stylesheet" href="./css/normalize.css">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-illustration">
+            <img src="./images/Abraco.svg" alt="Illustration" class="left-illustration">
+        </div>
+
+        <div class="login-form-container">
+            <div class="login-logo">
+                <img src="./images/Logo-cor NCPI.svg" alt="NCPI Logo">
+            </div>
+
+            <h1 class="login-title">Login</h1>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">E-Mail</label>
+                    <input type="email" id="email" name="email" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" required autocomplete="current-password">
+                        <button type="button" class="toggle-password">
+                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M1.66666 10C1.66666 10 4.99999 3.33334 10 3.33334C15 3.33334 18.3333 10 18.3333 10C18.3333 10 15 16.6667 10 16.6667C4.99999 16.6667 1.66666 10 1.66666 10Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="#505050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-button">Entrar</button>
+            </form>
+
+            <div class="login-footer">
+                <button type="button" id="requestAccessButton" class="request-access-button">Solicitar acesso</button>
+            </div>
+        </div>
+
+        <div class="login-right-content">
+            <div class="welcome-text">
+                <h2>Olá! Bem-vindo ao<br>painel de indicadores</h2>
+            </div>
+            <img src="./images/Breastfeeding-cuate.svg" alt="Dashboard Illustration" class="right-illustration">
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal" id="registrationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Solicitar Acesso</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="fullName">Nome Completo</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                        <div class="error-message" id="fullNameError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">E-mail</label>
+                        <input type="email" id="regEmail" name="email" required autocomplete="username">
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Senha</label>
+                        <input type="password" id="regPassword" name="password" required autocomplete="new-password">
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmar Senha</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password">
+                        <div class="error-message" id="confirmPasswordError"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-button">Cancelar</button>
+                <button type="button" class="submit-button">Enviar Solicitação</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Success Modal -->
+    <div class="modal" id="registrationSuccessModal">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="success-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <path d="M10.6667 17.3333L14.6667 21.3333L21.3333 10.6667" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="16" cy="16" r="14" stroke="#4CAF50" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h2>Solicitação Enviada</h2>
+                <p>Sua solicitação de acesso foi enviada com sucesso. Um administrador irá revisar e aprovar seu cadastro em breve.</p>
+                <button type="button" class="primary-button">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/login.js"></script>
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        loginForm.addEventListener('submit', handleLogin);
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Resposta do servidor:', data);
+                    if (data.token) {
+                        console.log('Token recebido:', data.token);
+                        localStorage.setItem('authToken', data.token); // Armazena o token
+                        window.location.href = 'index.html'; // Redireciona para a página principal
+                    } else {
+                        console.error('Token não recebido.');
+                        alert(data.message || 'Erro ao fazer login.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao conectar ao servidor.');
+                });
+        }
+    </script>
+</body>
+</html>
