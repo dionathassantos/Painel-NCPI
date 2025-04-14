@@ -49,7 +49,7 @@ app.options('*', cors());
 app.use(bodyParser.json());
 
 // Serve arquivos estáticos da pasta 'public'
-app.use(express.static(path.join(__dirname, 'public'))); // Certifique-se de que 'public' é a pasta correta
+app.use(express.static(path.join(__dirname, 'public'))); // Certifique-se de que 'public' é o diretório correto
 
 // Ajusta a rota raiz para servir o login.html
 app.get('/', (req, res) => {

@@ -27,7 +27,7 @@
                     throw new Error('Token não encontrado');
                 }
 
-                const response = await fetch(`${APP_URL}/api/verify-token`, {
+                const response = await fetch(`${APP_URL}/api/verify-token`, { // Substituído API_URL por APP_URL
                     method: 'GET',
                     headers: { 
                         'Authorization': `Bearer ${token}`,
