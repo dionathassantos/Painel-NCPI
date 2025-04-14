@@ -32,7 +32,7 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    mode: 'cors' // Removed 'credentials' as it may not be necessary
+                    mode: 'cors' // CORS mode enabled without credentials
                 });
 
                 console.log('Resposta recebida:', response);
@@ -54,6 +54,7 @@
             } catch (error) {
                 console.error('Erro durante a verificação do token:', error);
                 localStorage.removeItem('authToken');
+                console.log('Redirecionando para /login.html');
                 window.location.href = '/login.html';
                 return false;
             }
