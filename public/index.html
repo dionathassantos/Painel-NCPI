@@ -36,15 +36,7 @@
                 });
 
                 if (!response.ok) {
-                    console.error('Falha na verificação do token:', response.status, response.statusText);
-                    let errorData;
-                    try {
-                        errorData = await response.json();
-                        console.error('Detalhes do erro:', errorData);
-                    } catch (e) {
-                        console.error('Erro ao processar a resposta do servidor:', e.message);
-                    }
-                    throw new Error('Token inválido ou expirado');
+                    throw new Error(`Erro ${response.status}: ${response.statusText}`);
                 }
 
                 const data = await response.json();
@@ -60,7 +52,7 @@
                 return true;
 
             } catch (error) {
-                console.error('Erro durante a verificação do token:', error.message);
+                console.error('Erro durante a verificação do token:', error);
 
                 // Redireciona para a tela de login apenas se o token for inválido ou expirado
                 if (!window.location.pathname.includes('login.html')) {
