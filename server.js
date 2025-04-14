@@ -45,6 +45,9 @@ app.use(cors({
 // Responder a requisições OPTIONS (preflight)
 app.options('*', cors());
 
+// Middleware para processar JSON no corpo das requisições
+app.use(bodyParser.json());
+
 // Ajusta a rota raiz para servir o login.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
@@ -95,6 +98,12 @@ app.post('/api/register', async (req, res) => {
 // Rota de Login
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
+
+    // Verifica se os campos obrigatórios foram fornecidos
+    if (!email || !password) {
+        return res.status(400).json({ message: 'E-mail e senha são obrigatórios.' });
+    }
+
     try {
         const usersRef = db.ref('users');
         usersRef.orderByChild('email').equalTo(email).once('value', async (snapshot) => {
@@ -116,7 +125,7 @@ app.post('/api/login', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error(error);
+        console.error('Erro no servidor durante o login:', error);
         res.status(500).json({ message: 'Erro no servidor.' });
     }
 });
