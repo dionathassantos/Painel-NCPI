@@ -31,9 +31,11 @@ app.use(cors({
             'http://localhost:5550',
             'https://painel-ncpi-io.onrender.com'
         ];
+        console.log('Origin da requisição:', origin); // Log para depuração
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true); // Permitir o domínio
         } else {
+            console.error('CORS bloqueado para o origin:', origin); // Log para depuração
             callback(new Error('Not allowed by CORS')); // Bloquear outros domínios
         }
     },
@@ -72,10 +74,17 @@ app.use(express.static(path.join(__dirname, 'public'))); // Certifique-se de que
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-    if (!token) return res.status(401).json({ message: 'Token não fornecido.' });
+    if (!token) {
+        console.error('Token não fornecido no header Authorization'); // Log para depuração
+        return res.status(401).json({ message: 'Token não fornecido.' });
+    }
 
     jwt.verify(token, SECRET_KEY, (err, user) => {
-        if (err) return res.status(403).json({ message: 'Token inválido ou expirado.' });
+        if (err) {
+            console.error('Erro ao verificar o token:', err.message); // Log para depuração
+            return res.status(403).json({ message: 'Token inválido ou expirado.' });
+        }
+        console.log('Token verificado com sucesso:', user); // Log para depuração
         req.user = user;
         next();
     });
@@ -139,8 +148,8 @@ app.post('/api/login', async (req, res) => {
 
 // Rota para validar o token
 app.get('/api/verify-token', authenticateToken, (req, res) => {
-    console.log("Requisição recebida para verificação do token"); // Log para verificar se a rota foi acessada
-    console.log("Token no header:", req.headers.authorization); // Log para verificar o token recebido no cabeçalho
+    console.log('Requisição recebida na rota /api/verify-token'); // Log para depuração
+    console.log('Token recebido no header Authorization:', req.headers.authorization); // Log para depuração
     res.status(200).json({ message: 'Token válido!', user: req.user });
 });
 
