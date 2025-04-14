@@ -12,68 +12,44 @@
         const APP_URL = window.location.origin;
 
         let pageInitialized = false;
-        let isVerifying = false;
 
-        async function verifyToken() {
-            if (isVerifying) return; // Prevent multiple simultaneous verifications
-            isVerifying = true;
-
-            try {
-                const token = localStorage.getItem('authToken');
-                console.log('Iniciando verificação do token:', token);
-
-                if (!token) {
-                    throw new Error('Token não encontrado');
-                }
-
-                const response = await fetch(`https://painel-ncpi-io.onrender.com/api/verify-token`, {
-                    method: 'GET',
-                    headers: { 
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                console.log('Verificação do token bem-sucedida:', data);
-                pageInitialized = true;
-                isVerifying = false;
-
-                // Redireciona para a página inicial apenas se estiver na tela de login
-                if (window.location.pathname.includes('login.html')) {
-                    window.location.replace(`${APP_URL}/index.html`);
-                }
-
-                return true;
-
-            } catch (error) {
-                console.error('Erro durante a verificação do token:', error);
-
-                // Redireciona para a tela de login apenas se o token for inválido ou expirado
-                if (!window.location.pathname.includes('login.html')) {
-                    localStorage.removeItem('authToken');
-                    window.location.replace(`${APP_URL}/login.html`);
-                }
-                isVerifying = false;
-                return false;
+        function verifyToken() {
+            const token = localStorage.getItem('authToken'); // Obtenha o token do armazenamento local
+            if (!token) {
+                console.error('Token não encontrado. Redirecionando para a página de login.');
+                window.location.href = '/login.html'; // Redirecione para login se o token não existir
+                return;
             }
+
+            console.log('Iniciando verificação do token:', token);
+            fetch('https://painel-ncpi-io.onrender.com/api/verify-token', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Token válido!') {
+                    console.log('Verificação do token bem-sucedida:', data);
+                    console.log('Token validado com sucesso. Página liberada.');
+                    pageInitialized = true;
+                } else {
+                    console.error('Token inválido ou expirado. Redirecionando para a página de login.');
+                    localStorage.removeItem('authToken');
+                    window.location.href = '/login.html'; // Redirecione para login se o token for inválido
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao verificar o token:', error);
+                localStorage.removeItem('authToken');
+                window.location.href = '/login.html'; // Redirecione para login em caso de erro
+            });
         }
 
         // Apenas verifica o token após o evento DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
-            verifyToken().then(valid => {
-                if (valid) {
-                    console.log('Token validado com sucesso. Página liberada.');
-                } else {
-                    console.warn('Token inválido, redirecionando para login.');
-                }
-            }).catch(error => {
-                console.error('Erro crítico:', error);
-            });
+            verifyToken();
         });
     </script>
 </head>
