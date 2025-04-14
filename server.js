@@ -48,6 +48,13 @@ app.options('*', cors());
 // Middleware para processar JSON no corpo das requisições
 app.use(bodyParser.json());
 
+// Middleware para logar requisições recebidas (para depuração)
+app.use((req, res, next) => {
+    console.log(`Recebendo requisição: ${req.method} ${req.url}`);
+    console.log('Corpo da requisição:', req.body);
+    next();
+});
+
 // Ajusta a rota raiz para servir o login.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
@@ -126,7 +133,7 @@ app.post('/api/login', async (req, res) => {
         });
     } catch (error) {
         console.error('Erro no servidor durante o login:', error);
-        res.status(500).json({ message: 'Erro no servidor.' });
+        res.status(500).json({ message: 'Erro no servidor.', error: error.message });
     }
 });
 
@@ -140,6 +147,12 @@ app.get('/api/verify-token', authenticateToken, (req, res) => {
 // Rota protegida de exemplo
 app.get('/api/protected', authenticateToken, (req, res) => {
     res.json({ message: 'Acesso autorizado.', user: req.user });
+});
+
+// Middleware para capturar erros não tratados
+app.use((err, req, res, next) => {
+    console.error('Erro não tratado:', err);
+    res.status(500).json({ message: 'Erro interno no servidor.', error: err.message });
 });
 
 // Inicia o servidor
