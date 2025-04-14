@@ -27,7 +27,7 @@
                     throw new Error('Token não encontrado');
                 }
 
-                const response = await fetch(`${API_URL}/verify-token`, {
+                const response = await fetch(`${APP_URL}/api/verify-token`, {
                     method: 'GET',
                     headers: { 
                         'Authorization': `Bearer ${token}`,
@@ -35,22 +35,19 @@
                     }
                 });
 
-                console.log('Status da resposta:', response.status);
-
-                if (response.status === 401) {
+                if (!response.ok) {
+                    console.error('Falha na verificação do token:', response.status, response.statusText);
+                    const errorData = await response.json();
+                    console.error('Detalhes do erro:', errorData);
                     throw new Error('Token inválido ou expirado');
                 }
 
-                if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status}`);
-                }
-
                 const data = await response.json();
-                console.log('Token válido:', data);
+                console.log('Verificação do token bem-sucedida:', data);
                 pageInitialized = true;
                 isVerifying = false;
 
-                // Remova o redirecionamento para login.html se o token for válido
+                // Redireciona para a página inicial apenas se estiver na tela de login
                 if (window.location.pathname.includes('login.html')) {
                     window.location.replace(`${APP_URL}/index.html`);
                 }
@@ -58,11 +55,10 @@
                 return true;
 
             } catch (error) {
-                console.error('Erro na verificação:', error.message);
+                console.error('Erro durante a verificação do token:', error.message);
 
                 // Redireciona para a tela de login apenas se o token for inválido ou expirado
-                if (!window.location.pathname.includes('login.html') && 
-                    (error.message.includes('Token') || error.message.includes('401'))) {
+                if (!window.location.pathname.includes('login.html')) {
                     localStorage.removeItem('authToken');
                     window.location.replace(`${APP_URL}/login.html`);
                 }
