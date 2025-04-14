@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         // Configuratio
-        const API_URL = '/api/verify-token';
+        const API_URL = '/api'; // Ajustado para ser a base da API
         const APP_URL = 'http://localhost:5550/public'; // Corrigido para o endereço correto do Vite Server
 
         let pageInitialized = false;
@@ -27,7 +27,7 @@
                     throw new Error('Token não encontrado');
                 }
 
-                const response = await fetch(`${API_URL}/api/verify-token`, {
+                const response = await fetch(`${API_URL}/verify-token`, { // Corrigido para evitar duplicação
                     method: 'GET',
                     headers: { 
                         'Authorization': `Bearer ${token}`,
