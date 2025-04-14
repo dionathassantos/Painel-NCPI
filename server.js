@@ -25,26 +25,14 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-    origin: (origin, callback) => {
-        const allowedOrigins = [
-            'http://127.0.0.1:5500',
-            'http://localhost:5550',
-            'https://painel-ncpi-io.onrender.com'
-        ];
-        console.log('Origin da requisição:', origin); // Log para depuração
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true); // Permitir o domínio
-        } else {
-            console.error('CORS bloqueado para o origin:', origin); // Log para depuração
-            callback(new Error('Not allowed by CORS')); // Bloquear outros domínios
-        }
-    },
-    credentials: true, // Permitir envio de cookies, se necessário
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'] // Cabeçalhos permitidos
+    origin: '*', // Temporarily allow all origins for testing
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Authorization']
 }));
 
-// Responder a requisições OPTIONS (preflight)
+// Enable pre-flight requests for all routes
 app.options('*', cors());
 
 // Middleware para processar JSON no corpo das requisições
@@ -148,8 +136,11 @@ app.post('/api/login', async (req, res) => {
 
 // Rota para validar o token
 app.get('/api/verify-token', authenticateToken, (req, res) => {
-    console.log('Requisição recebida na rota /api/verify-token'); // Log para depuração
-    console.log('Token recebido no header Authorization:', req.headers.authorization); // Log para depuração
+    console.log('Requisição recebida na rota /api/verify-token');
+    console.log('Headers recebidos:', req.headers);
+    console.log('Token recebido:', req.headers.authorization);
+    
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(200).json({ message: 'Token válido!', user: req.user });
 });
 

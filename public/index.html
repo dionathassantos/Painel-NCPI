@@ -14,41 +14,42 @@
         let pageInitialized = false;
 
         async function verifyToken() {
-            const token = localStorage.getItem('authToken');
-            console.log('Iniciando verificação do token:', token);
-
-            if (!token) {
-                console.error('Token não encontrado. Redirecionando para login.');
-                window.location.href = '/login.html';
-                return false;
-            }
-
             try {
-                const response = await fetch(`${APP_URL}/api/verify-token`, {
+                const token = localStorage.getItem('authToken');
+                console.log('Iniciando verificação do token:', token);
+
+                if (!token) {
+                    throw new Error('Token não encontrado');
+                }
+
+                // Use the complete URL for the API
+                const apiUrl = 'https://painel-ncpi-io.onrender.com/api/verify-token';
+                console.log('Fazendo requisição para:', apiUrl);
+
+                const response = await fetch(apiUrl, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    mode: 'cors',
+                    credentials: 'same-origin'
                 });
 
-                console.log('Resposta da API /api/verify-token:', response);
+                console.log('Resposta recebida:', response);
 
                 if (!response.ok) {
-                    throw new Error(`Erro ${response.status}: ${response.statusText}`);
+                    throw new Error(`Erro HTTP: ${response.status}`);
                 }
 
                 const data = await response.json();
                 console.log('Dados recebidos:', data);
 
                 if (data.message === 'Token válido!') {
-                    console.log('Token validado com sucesso. Página liberada.');
+                    console.log('Token validado com sucesso');
                     return true;
                 } else {
-                    console.error('Token inválido ou expirado.');
-                    localStorage.removeItem('authToken');
-                    window.location.href = '/login.html';
-                    return false;
+                    throw new Error('Token inválido');
                 }
             } catch (error) {
                 console.error('Erro durante a verificação do token:', error);
@@ -58,10 +59,16 @@
             }
         }
 
+        // Update event listener to prevent multiple calls
+        let verificationInProgress = false;
+
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('Evento DOMContentLoaded disparado.');
-            const valid = await verifyToken();
-            console.log('Verificação completa. Token validado?', valid);
+            if (!verificationInProgress) {
+                verificationInProgress = true;
+                console.log('Iniciando verificação de token...');
+                const valid = await verifyToken();
+                console.log('Verificação completa:', valid);
+            }
         });
     </script>
 </head>
