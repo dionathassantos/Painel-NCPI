@@ -48,7 +48,6 @@
 
                 if (data.message === 'Token válido!') {
                     console.log('Token validado com sucesso');
-                    // Não redireciona se já estiver na página correta
                     if (window.location.pathname === '/login.html') {
                         console.log('Redirecionando para index.html');
                         window.location.href = '/index.html';
@@ -60,7 +59,6 @@
             } catch (error) {
                 console.error('Erro durante a verificação do token:', error);
                 localStorage.removeItem('authToken');
-                // Só redireciona para login se não estiver já na página de login
                 if (window.location.pathname !== '/login.html') {
                     console.log('Redirecionando para login.html');
                     window.location.href = '/login.html';

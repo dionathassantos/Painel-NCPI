@@ -25,10 +25,23 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-    origin: true, // Allows all origins - will be restricted in production
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            'http://127.0.0.1:5500',
+            'http://localhost:5550',
+            'https://painel-ncpi-io.onrender.com'
+        ];
+        console.log('Origin da requisição:', origin); // Log para depuração
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true); // Permitir o domínio
+        } else {
+            console.error('CORS bloqueado para o origin:', origin); // Log para depuração
+            callback(new Error('Not allowed by CORS')); // Bloquear outros domínios
+        }
+    },
+    credentials: true, // Permitir envio de cookies, se necessário
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'], // Cabeçalhos permitidos
     exposedHeaders: ['Authorization']
 }));
 
@@ -136,7 +149,7 @@ app.post('/api/login', async (req, res) => {
 
 // Rota para validar o token
 app.get('/api/verify-token', (req, res, next) => {
-    console.log('Headers recebidos:', req.headers);
+    console.log('Headers recebidos na rota /api/verify-token:', req.headers);
     authenticateToken(req, res, next);
 }, (req, res) => {
     console.log('Token verificado com sucesso');
