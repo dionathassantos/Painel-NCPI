@@ -22,7 +22,7 @@
                     throw new Error('Token não encontrado');
                 }
 
-                const apiUrl = 'https://painel-ncpi-io.onrender.com/api/verify-token';
+                const apiUrl = `${APP_URL}/api/verify-token`;
                 console.log('Fazendo requisição para:', apiUrl);
 
                 const response = await fetch(apiUrl, {
@@ -32,8 +32,7 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    mode: 'cors',
-                    credentials: 'include'
+                    mode: 'cors' // Removed 'credentials' as it may not be necessary
                 });
 
                 console.log('Resposta recebida:', response);
@@ -47,11 +46,7 @@
                 console.log('Dados recebidos:', data);
 
                 if (data.message === 'Token válido!') {
-                    console.log('Token validado com sucesso');
-                    if (window.location.pathname === '/login.html') {
-                        console.log('Redirecionando para index.html');
-                        window.location.href = '/index.html';
-                    }
+                    console.log('Token validado com sucesso. Página liberada.');
                     return true;
                 } else {
                     throw new Error('Token inválido');
@@ -59,10 +54,7 @@
             } catch (error) {
                 console.error('Erro durante a verificação do token:', error);
                 localStorage.removeItem('authToken');
-                if (window.location.pathname !== '/login.html') {
-                    console.log('Redirecionando para login.html');
-                    window.location.href = '/login.html';
-                }
+                window.location.href = '/login.html';
                 return false;
             }
         }

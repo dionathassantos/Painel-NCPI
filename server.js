@@ -31,21 +31,20 @@ app.use(cors({
             'http://localhost:5550',
             'https://painel-ncpi-io.onrender.com'
         ];
-        console.log('Origin da requisição:', origin); // Log para depuração
+        console.log('Origin da requisição:', origin);
         if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true); // Permitir o domínio
+            callback(null, true);
         } else {
-            console.error('CORS bloqueado para o origin:', origin); // Log para depuração
-            callback(new Error('Not allowed by CORS')); // Bloquear outros domínios
+            console.error('CORS bloqueado para o origin:', origin);
+            callback(new Error('Not allowed by CORS'), false);
         }
     },
-    credentials: true, // Permitir envio de cookies, se necessário
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'], // Cabeçalhos permitidos
-    exposedHeaders: ['Authorization']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: false // Removed credentials as cookies are not being used
 }));
 
-// Enable pre-flight requests for all routes
+// Handle preflight requests
 app.options('*', cors());
 
 // Middleware para processar JSON no corpo das requisições
