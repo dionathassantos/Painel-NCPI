@@ -128,6 +128,7 @@ app.post('/api/login', async (req, res) => {
 
 // Rota para validar o token
 app.get('/api/verify-token', authenticateToken, (req, res) => {
+    console.log("Rota /api/verify-token acessada!"); // Log para verificar se a rota foi acessada
     res.status(200).json({ message: 'Token válido!', user: req.user });
 });
 
