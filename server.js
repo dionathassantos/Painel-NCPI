@@ -24,14 +24,13 @@ const db = admin.database();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-const allowedOrigins = [
-    'http://127.0.0.1:5500',
-    'http://localhost:5550',
-    'https://painel-ncpi-io.onrender.com'
-];
-
 app.use(cors({
     origin: (origin, callback) => {
+        const allowedOrigins = [
+            'http://127.0.0.1:5500',
+            'http://localhost:5550',
+            'https://painel-ncpi-io.onrender.com'
+        ];
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
