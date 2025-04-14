@@ -29,16 +29,18 @@
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     mode: 'cors',
-                    credentials: 'same-origin'
+                    credentials: 'include'
                 });
 
                 console.log('Resposta recebida:', response);
 
                 if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status}`);
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -46,8 +48,9 @@
 
                 if (data.message === 'Token válido!') {
                     console.log('Token validado com sucesso');
-                    // Se estiver na página de login, redireciona para index
+                    // Não redireciona se já estiver na página correta
                     if (window.location.pathname === '/login.html') {
+                        console.log('Redirecionando para index.html');
                         window.location.href = '/index.html';
                     }
                     return true;
@@ -57,7 +60,9 @@
             } catch (error) {
                 console.error('Erro durante a verificação do token:', error);
                 localStorage.removeItem('authToken');
+                // Só redireciona para login se não estiver já na página de login
                 if (window.location.pathname !== '/login.html') {
+                    console.log('Redirecionando para login.html');
                     window.location.href = '/login.html';
                 }
                 return false;
@@ -71,8 +76,14 @@
             if (!verificationInProgress) {
                 verificationInProgress = true;
                 console.log('Iniciando verificação de token...');
-                const valid = await verifyToken();
-                console.log('Verificação completa. Token validado?', valid);
+                try {
+                    const valid = await verifyToken();
+                    console.log('Verificação completa:', valid);
+                } catch (error) {
+                    console.error('Erro na verificação:', error);
+                } finally {
+                    verificationInProgress = false;
+                }
             }
         });
     </script>

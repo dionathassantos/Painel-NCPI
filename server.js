@@ -25,10 +25,10 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-    origin: '*', // Temporarily allow all origins for testing
+    origin: true, // Allows all origins - will be restricted in production
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     exposedHeaders: ['Authorization']
 }));
 
@@ -135,13 +135,15 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Rota para validar o token
-app.get('/api/verify-token', authenticateToken, (req, res) => {
-    console.log('Requisição recebida na rota /api/verify-token');
+app.get('/api/verify-token', (req, res, next) => {
     console.log('Headers recebidos:', req.headers);
-    console.log('Token recebido:', req.headers.authorization);
-    
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.status(200).json({ message: 'Token válido!', user: req.user });
+    authenticateToken(req, res, next);
+}, (req, res) => {
+    console.log('Token verificado com sucesso');
+    res.status(200).json({ 
+        message: 'Token válido!',
+        user: req.user
+    });
 });
 
 // Rota protegida de exemplo
