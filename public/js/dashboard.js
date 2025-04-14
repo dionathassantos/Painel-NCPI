@@ -1,7 +1,32 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const token = localStorage.getItem('authToken');
     if (!token) {
         window.location.href = 'login.html'; // Redireciona para login se o token não existir
+        return;
+    }
+
+    // Validate token
+    try {
+        const response = await fetch(`${window.location.origin}/api/verify-token`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Token inválido ou expirado');
+        }
+
+        const data = await response.json();
+        console.log('Token validado:', data);
+    } catch (error) {
+        console.error('Erro ao validar o token:', error);
+        localStorage.removeItem('authToken');
+        window.location.href = 'login.html'; // Redireciona para login se o token for inválido
+        return;
     }
 
     // Initialize porta selector
@@ -451,7 +476,7 @@ function openMetaModal(metaId) {
                             <label class="text-sm font-medium text-gray-500">Parecer</label>
                         </div>
                         <div class="p-4 bg-white rounded-md text-[#505050] border border-gray-200 min-h-[100px] pl-10">
-                            ${meta.parecer}
+                            ${history.parecer}
                         </div>
                     </div>
                 </div>
