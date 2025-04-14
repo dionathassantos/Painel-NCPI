@@ -29,7 +29,7 @@ app.use(cors({
         const allowedOrigins = [
             'http://127.0.0.1:5500',
             'http://localhost:5550',
-            'https://painel-ncpi-io.onrender.com'
+            'https://painel-ncpi-io-1.onrender.com'
         ];
         console.log('Origin da requisição:', origin);
         if (!origin || allowedOrigins.includes(origin)) {
