@@ -62,11 +62,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// Ajusta a rota para o index.html
-app.get('/index.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
 // Serve arquivos estáticos da pasta 'public'
 app.use(express.static(path.join(__dirname, 'public'))); // Certifique-se de que 'public' é o diretório correto
 
