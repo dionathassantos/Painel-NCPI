@@ -128,20 +128,8 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Rota para validar o token
-app.get('/api/verify-token', (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1]; // Extrai o token do cabeçalho Authorization
-
-    if (!token) {
-        return res.status(401).json({ message: 'Token não fornecido.' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, SECRET_KEY); // Verifica o token
-        res.status(200).json({ message: 'Token válido.', decoded });
-    } catch (error) {
-        console.error('Erro ao verificar token:', error);
-        res.status(401).json({ message: 'Token inválido ou expirado.' });
-    }
+app.get('/api/verify-token', authenticateToken, (req, res) => {
+    res.status(200).json({ message: 'Token válido!', user: req.user });
 });
 
 // Rota protegida de exemplo

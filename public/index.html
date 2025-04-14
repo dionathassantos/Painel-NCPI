@@ -27,7 +27,7 @@
                     throw new Error('Token não encontrado');
                 }
 
-                const response = await fetch(`${API_URL}/verify-token`, { // Corrigido para evitar duplicação
+                const response = await fetch(`${API_URL}/verify-token`, {
                     method: 'GET',
                     headers: { 
                         'Authorization': `Bearer ${token}`,
@@ -50,7 +50,7 @@
                 pageInitialized = true;
                 isVerifying = false;
 
-                // Redireciona para a página inicial apenas se estiver na tela de login
+                // Remova o redirecionamento para login.html se o token for válido
                 if (window.location.pathname.includes('login.html')) {
                     window.location.replace(`${APP_URL}/index.html`);
                 }
